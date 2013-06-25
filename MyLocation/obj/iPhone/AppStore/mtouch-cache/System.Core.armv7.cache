@@ -1,0 +1,1 @@
+--aot=mtriple=armv7-darwin,full,static,asmonly,direct-icalls,nodebug,outfile=/System.Core.dll.armv7.s "/Users/freerjm/Projects/MyLocation/MyLocation/bin/iPhone/AppStore/MyLocation.app/System.Core.dll"

@@ -11,7 +11,10 @@ namespace MyLocation
 	public partial class MyLocationViewController : UIViewController
 	{
 		MapView mapView;
-
+		double myLat;
+		double myLong;
+		double tempLat;
+		double tempLong;
 
 		public MyLocationViewController () : base ("MyLocationViewController", null)
 		{
@@ -25,20 +28,23 @@ namespace MyLocation
 			var camera = CameraPosition.FromCamera (latitude: 37.797865, 
 			                                        longitude: -122.402526, 
 			                                        zoom: 2);
+	
 			mapView = MapView.FromCamera (RectangleF.Empty, camera);
 			
 			mapView.MyLocationEnabled = true;
-			//double latitude = mapView.MyLocation.Coordinate.Latitude;
-			//double longitude = mapView.MyLocation.Coordinate.Longitude;
 
-			View = mapView;
-
-			for(int i = 0; i <10; i++){
-
-			addPinToCurrentLocation();
-
-			View = mapView;
+			if(mapView.MyLocation != null){
+				myLat = mapView.MyLocation.Coordinate.Latitude;
+				myLong = mapView.MyLocation.Coordinate.Longitude;
+				moveCameraToLocation (myLat, myLong, 4, mapView);
+			}else{
+				tempLat = 25.7216;
+				tempLong = -80.2793;
+				moveCameraToLocation (tempLat, tempLong, 4, mapView);
 			}
+			                                          
+			View = mapView;
+		
 		}
 
 		public override void ViewWillAppear (bool animated)
@@ -52,28 +58,20 @@ namespace MyLocation
 			mapView.StopRendering ();
 			base.ViewWillDisappear (animated);
 		}
-		public void addPinToCurrentLocation ()
-		{
-			CLLocation myPosition;;
-			myPosition = mapView.MyLocation;
-			if (myPosition == null) {
-				Console.WriteLine ("Cant resolve location.");
-			}else{
-				Console.WriteLine ("I got you bitch");
-			}
-			double mylat = myPosition.Coordinate.Latitude;
-			double mylong = myPosition.Coordinate.Longitude;
-			CLLocationCoordinate2D myPos = new CLLocationCoordinate2D (mylat, mylong);
 
-			var myPostionMarker = new Marker () {
-				Title = "My location",
-				Snippet = "",
-				Position = myPos,
-				Map = mapView
+		//adds a pin to a location by specifying the latitude and longitude
+		public void addPinToLocation (double latitude, double longitude, String title, String snippet, MapView map){
+			CLLocationCoordinate2D coord = new CLLocationCoordinate2D (latitude, longitude);
+			var marker = new Marker () {
+				Title = title,
+				Snippet = snippet,
+				Position = coord,
+				Map = map
 			};
-
-			mapView.SelectedMarker = myPostionMarker;
-			Thread.Sleep (10000);
+		}
+		//moves the camera of a map to a location by specifying the latitude and longitude
+		public void moveCameraToLocation (double latitude, double longitude, float zoom, MapView map){
+			map.MoveCamera (CameraUpdate.SetCamera(CameraPosition.FromCamera( latitude, longitude, zoom)));
+		}
 	}
-}
 }
