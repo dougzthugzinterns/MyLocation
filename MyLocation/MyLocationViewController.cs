@@ -15,6 +15,7 @@ namespace MyLocation
 		double myLong;
 		double tempLat;
 		double tempLong;
+		bool firstLocationUpdate;
 
 		public MyLocationViewController () : base ("MyLocationViewController", null)
 		{
@@ -42,7 +43,8 @@ namespace MyLocation
 				tempLong = -80.2793;
 				moveCameraToLocation (tempLat, tempLong, 4, mapView);
 			}
-			                                          
+			// Listen to the myLocation property of GMSMapView.
+			mapView.AddObserver (this, new NSString ("myLocation"), NSKeyValueObservingOptions.New, IntPtr.Zero);                                          
 			View = mapView;
 		
 		}
@@ -57,6 +59,18 @@ namespace MyLocation
 		{	
 			mapView.StopRendering ();
 			base.ViewWillDisappear (animated);
+		}
+		public override void ObserveValue (NSString keyPath, NSObject ofObject, NSDictionary change, IntPtr context)
+		{
+			//base.ObserveValue (keyPath, ofObject, change, context);
+
+			if (!firstLocationUpdate) {
+				// If the first location update has not yet been recieved, then jump to that
+				// location.
+				firstLocationUpdate = true;
+				var location = change.ObjectForKey (NSValue.ChangeNewKey) as CLLocation;
+				mapView.Camera = CameraPosition.FromCamera (location.Coordinate, 14);
+			}
 		}
 
 		//adds a pin to a location by specifying the latitude and longitude
