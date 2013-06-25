@@ -19,11 +19,13 @@ namespace MyLocation
 		{
 			base.LoadView ();
 
-			var camera = CameraPosition.FromCamera (latitude: 37.797865, 
-			                                        longitude: -122.402526, 
-			                                        zoom: 6);
-			mapView = MapView.FromCamera (RectangleF.Empty, camera);
+			//var camera = CameraPosition.FromCamera (latitude: 37.797865, 
+			                                        //longitude: -122.402526, 
+			                                        //zoom: 6);
+			//mapView = MapView.FromCamera (RectangleF.Empty, camera);
 			mapView.MyLocationEnabled = true;
+			var camera = CameraPosition.FromCamera (mapView.MyLocation.Coordinate.Latitude, mapView.MyLocation.Coordinate.Longitude, 6);
+			mapView = MapView.FromCamera (RectangleF.Empty, camera);
 			View = mapView;
 		}
 
